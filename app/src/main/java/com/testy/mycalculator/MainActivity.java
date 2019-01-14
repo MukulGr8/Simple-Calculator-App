@@ -8,9 +8,11 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btn1,btn2,btn3,btn0,btn4,btn5,btn6,btn7,btn8,btn9,btnMul,btnSub,btnDiv,btnAdd;
+    Button btn1, btn2, btn3, btn0, btn4, btn5, btn6, btn7, btn8, btn9, btnMul, btnSub, btnDiv, btnAdd;
     TextView txtPerform;
-    String num="";
+    String num = "", num2 = "";
+    boolean ifOperatorClicked=false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,15 +26,15 @@ public class MainActivity extends AppCompatActivity {
         btn7 = findViewById(R.id.btn7);
         btn8 = findViewById(R.id.btn8);
         btn9 = findViewById(R.id.btn9);
-        btn0 = findViewById(R.id.btn0);
 
         btnAdd = findViewById(R.id.btnAdd);
         btnSub = findViewById(R.id.btnSub);
         btnDiv = findViewById(R.id.btnDiv);
         btnMul = findViewById(R.id.btnMul);
 
-        txtPerform  = findViewById(R.id.txtPerform);
+        txtPerform = findViewById(R.id.txtPerform);
     }
+
 
     public void calCheck(View v) {
         switch (v.getId()) {
@@ -79,68 +81,71 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void calFun(View v){
-        switch (v.getId()){
-            case R.id.btnMul:
-                num = num + " * ";
-                txtPerform.setText(num);
-                break;
-            case R.id.btnAdd:
-                num = num + " + ";
-                txtPerform.setText(num);
-                break;
-            case R.id.btnSub:
-                num = num + " - ";
-                txtPerform.setText(num);
-                break;
-            case R.id.btnDiv:
-                num = num + " / ";
-                txtPerform.setText(num);
-                break;
-        }
-    }
+        public void calFun (View v){
+            switch (v.getId()) {
+                case R.id.btnMul:
+                    if(ifOperatorClicked){calEqual(btn0);}
+                    num = num + " * ";
+                    txtPerform.setText(num);
+                    ifOperatorClicked = true;
+                    break;
 
-    public void calEqual(View v) {
-        String s = num;
-        String one="";
-        String two="";
-        String ok="";
-        int found=0,done=0;
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            System.out.println(c);
-            if(c == '*' || c == '+' || c == '/' || c == '-'){
-                found = i;
-                ok = c+"";
-                one = s.substring(0,i);
+                case R.id.btnAdd:
+                    if(ifOperatorClicked){calEqual(btn0);}
+                    num = num + " + ";
+                    txtPerform.setText(num);
+                    ifOperatorClicked = true;
+                    break;
+                case R.id.btnSub:
+                    if(ifOperatorClicked){calEqual(btn0);}
+                    num = num + " - ";
+                    txtPerform.setText(num);
+                    ifOperatorClicked = true;
+                    break;
+
+                case R.id.btnDiv:
+                    if(ifOperatorClicked){calEqual(btn0);}
+                    num = num + " / ";
+                    txtPerform.setText(num);
+                    ifOperatorClicked = true;
+                    break;
             }
         }
-        two = s.substring(found+2,s.length());
-        switch (ok){
-            case "*":
-                done = Integer.parseInt(one.trim()) * Integer.parseInt(two.trim());
-                break;
 
-            case "-":
-                done = Integer.parseInt(one.trim()) - Integer.parseInt(two.trim());
-                break;
-
-            case "+":
-                done = Integer.parseInt(one.trim()) + Integer.parseInt(two.trim());
-                break;
-
-            case "/":
-                done = Integer.parseInt(one.trim()) / Integer.parseInt(two.trim());
-                break;
+        public void calEqual (View v){
+            int myRes = 0;
+            for (int i = 0; i < num.length(); i++) {
+                char c = num.charAt(i);
+                breakApart(c,i,myRes);
+            }
         }
-        num = "";
-        txtPerform.setText(num);
-        txtPerform.setText(done+"");
-    }
 
-    public void calClear(View v){
-        num="";
-        txtPerform.setText("");
-    }
-}
+        public void breakApart(char c,int i, int myRes){
+            String one = "";
+            String two = "";
+            String myOperator = "";
+            if (c == '*' || c == '+' || c == '/' || c == '-') {
+                myOperator = String.valueOf(c);
+                one = num.substring(0, i);
+                two = num.substring(i + 2, num.length());
+                System.out.println("One ="+one+", two ="+two);
+                performMaths(myOperator,one,two,myRes);
+            }
+        }
 
+        public void performMaths(String myOperator, String one, String two, int myRes){
+            switch (myOperator) {
+                case "*": myRes = Integer.parseInt(one.trim()) * Integer.parseInt(two.trim());break;
+                case "-": myRes = Integer.parseInt(one.trim()) - Integer.parseInt(two.trim());break;
+                case "+": myRes = Integer.parseInt(one.trim()) + Integer.parseInt(two.trim());break;
+                case "/": myRes = Integer.parseInt(one.trim()) / Integer.parseInt(two.trim());break;
+            }
+            num = String.valueOf(myRes);
+            txtPerform.setText(num);
+        }
+
+        public void calClear (View v){
+            num = "";
+            txtPerform.setText("");
+        }
+    }
